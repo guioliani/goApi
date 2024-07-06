@@ -1,7 +1,9 @@
 package campaign
 
 import (
+	"errors"
 	"goapi/internal/contract"
+	internalerrors "goapi/internal/internalErrors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,40 +19,60 @@ func (r *repositoryMock) Save(campaign *Campaign) error {
 	return args.Error(0)
 }
 
-func Test_Create_Campaign(t *testing.T) {
-	assert := assert.New(t)
-	service := Service{}
-	NewCampaign := contract.NewCampaign{
+var (
+	newCampaign = contract.NewCampaign{
 		Name:    "Test A",
 		Content: "Body",
 		Emails:  []string{"teste1@gmail.com"},
 	}
+	service = Service{}
+)
 
-	id, err := service.Create(NewCampaign)
+func Test_Create_Campaign(t *testing.T) {
+	assert := assert.New(t)
+
+	id, err := service.Create(newCampaign)
 	assert.NotNil(id)
 	assert.Nil(err)
 }
 
-func Test_Create_SaveCampaign(t *testing.T) {
-	NewCampaign := contract.NewCampaign{
-		Name:    "Test A",
-		Content: "Body",
-		Emails:  []string{"teste1@gmail.com"},
-	}
+func Test_Create_ValidateDomainError(t *testing.T) {
+	assert := assert.New(t)
+	newCampaign.Name = ""
 
+	_, err := service.Create(newCampaign)
+
+	assert.NotNil(err)
+	assert.Equal("name is required", err.Error())
+}
+
+func Test_Create_SaveCampaign(t *testing.T) {
 	repositoryMock := new(repositoryMock)
 	repositoryMock.On("Save", mock.MatchedBy(func(campaign *Campaign) bool {
-		if campaign.Name != NewCampaign.Name ||
-			campaign.Content != NewCampaign.Content ||
-			len(campaign.Contacts) != len(NewCampaign.Emails) {
+		if campaign.Name != newCampaign.Name ||
+			campaign.Content != newCampaign.Content ||
+			len(campaign.Contacts) != len(newCampaign.Emails) {
 			return false
 		}
 		return true
 	})).Return(nil)
 
-	service := Service{Repository: repositoryMock}
+	service.Repository = repositoryMock
 
-	service.Create(NewCampaign)
+	service.Create(newCampaign)
 
 	repositoryMock.AssertExpectations(t)
+}
+
+func Test_Create_ValidateRepositorySave(t *testing.T) {
+	assert := assert.New(t)
+
+	repositoryMock := new(repositoryMock)
+	repositoryMock.On("Save", mock.Anything).Return(errors.New("erro to save on database"))
+
+	service.Repository = repositoryMock
+
+	_, err := service.Create(newCampaign)
+
+	assert.True(errors.Is(internalerrors.ErrInternal, err))
 }
