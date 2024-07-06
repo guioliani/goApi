@@ -3,7 +3,6 @@ package campaign
 import (
 	"goapi/internal/contract"
 	internalerrors "goapi/internal/internalErrors"
-	"goapi/internal/validator"
 )
 
 type Service struct {
@@ -11,12 +10,7 @@ type Service struct {
 }
 
 func (s *Service) Create(newCampaign contract.NewCampaign) (string, error) {
-
 	campaign, err := NewCampaign(newCampaign.Name, newCampaign.Content, newCampaign.Emails)
-	if err != nil {
-		return "", err
-	}
-	err = validator.ValidateStruct(*campaign)
 	if err != nil {
 		return "", err
 	}

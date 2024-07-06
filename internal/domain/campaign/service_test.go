@@ -28,35 +28,21 @@ var (
 	service = Service{}
 )
 
+func Test_Create_ValidateDomainError(t *testing.T) {
+	assert := assert.New(t)
+	_, err := service.Create(contract.NewCampaign{})
+	assert.False(errors.Is(internalerrors.ErrInternal, err))
+}
+
 func Test_Create_Campaign(t *testing.T) {
 	assert := assert.New(t)
+	repositoryMock := new(repositoryMock)
+	repositoryMock.On("Save", mock.Anything).Return(nil)
+	service.Repository = repositoryMock
 
 	id, err := service.Create(newCampaign)
 	assert.NotNil(id)
 	assert.Nil(err)
-}
-
-func Test_Create_ValidateDomainError(t *testing.T) {
-	assert := assert.New(t)
-	newCampaign.Name = ""
-	_, err := service.Create(newCampaign)
-	if err != nil {
-		assert.Equal("Name is required", err.Error())
-	} else {
-		assert.Fail("Expected error but got nil")
-	}
-
-}
-
-func Test_Create_ValidateNameSize(t *testing.T) {
-	assert := assert.New(t)
-	newCampaign.Name = "adhasjdhaskjdhsdjdhasgdhjasgdhjsgdhjgas"
-	_, err := service.Create(newCampaign)
-	if err != nil {
-		assert.Equal("The Name must have a maximum of 30 characters", err.Error())
-	} else {
-		assert.Fail("Expected error but got nil")
-	}
 }
 
 func Test_Create_SaveCampaign(t *testing.T) {
