@@ -12,7 +12,7 @@ type Contact struct {
 }
 
 type Campaign struct {
-	Id        string
+	ID        string
 	Name      string
 	Content   string
 	Contacts  []Contact
@@ -35,7 +35,7 @@ func NewCampaign(name string, content string, emails []string) (*Campaign, error
 	}
 
 	return &Campaign{
-		Id:        xid.New().String(),
+		ID:        xid.New().String(),
 		Name:      name,
 		Content:   content,
 		CreatedOn: time.Now(),

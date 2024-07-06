@@ -26,7 +26,7 @@ func TestNewCampaignIdIsNotNill(t *testing.T) {
 	assert := assert.New(t)
 	campaign, _ := NewCampaign(name, content, contacts)
 
-	assert.NotNil(campaign.Id)
+	assert.NotNil(campaign.ID)
 }
 
 func TestNewCampaignCreatedOnisNotNill(t *testing.T) {
