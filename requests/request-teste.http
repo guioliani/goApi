@@ -1,0 +1,18 @@
+//Request with param
+GET http://localhost:3000/mouse
+###
+//request with query param
+GET http://localhost:3000/?name=guilherme
+
+###
+//request with json return
+GET http://localhost:3000/json2
+
+
+###
+
+POST http://localhost:3000/product2
+
+{
+    "name": "celular"
+}
