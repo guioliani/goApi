@@ -22,8 +22,8 @@ func main() {
 	}
 
 	//routes
-	r.Post("/campaigns", handler.CreateCampaign)
-	r.Get("/campaigns", handler.GetCampaign)
+	r.Post("/campaigns", endpoints.HandlerError(handler.CreateCampaign))
+	r.Get("/campaigns", endpoints.HandlerError(handler.GetCampaign))
 	log.Println("Server starting on port 3000")
 	http.ListenAndServe(":3000", r)
 }
