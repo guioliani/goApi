@@ -13,12 +13,12 @@ import (
 func main() {
 	r := chi.NewRouter()
 
-	campaignService := campaign.Service{
+	campaignService := campaign.ServiceImp{
 		Repository: &databse.CampaignRepository{},
 	}
 
 	handler := endpoints.Handler{
-		CampaignService: campaignService,
+		CampaignService: &campaignService,
 	}
 
 	//routes
